@@ -1,6 +1,6 @@
 import { getDbConnecion } from "../db";
-import bcrypt from bcrypt;
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 
 const signUpRoute = {
@@ -11,13 +11,13 @@ const signUpRoute = {
         const db = getDbConnecion('Todo-app');
         const user = db.collection('users').findOne({email});
 
+
         if (user) {
             res.status(409).send('User already signed up');
         }
 
         const passwordHash = await bcrypt.hash(password, 12);
-
-        const result = await db.collection('users').insertion({
+        const result = await db.collection('users').insertOne({
             firstName,
             lastName,
             email,
@@ -26,7 +26,9 @@ const signUpRoute = {
             todos: [],
         })
 
+
         const {insertId} = result;
+        
         jwt.sign({
             id: insertId,
             email,
